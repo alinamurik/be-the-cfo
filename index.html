@@ -79,40 +79,63 @@ const STAIRS = `<div class="stairs" role="img" aria-label="FRA quotes: 1 by 4 at
   <p class="src">EUR FRAs on 3-month Euribor, Bloomberg, 19 October 2026. Bars to scale from zero.</p>`;
 
 const ROUNDS = [
-  { kicker: 'Round 1 · Two roads', type: 'slider', min: 4, max: 7, start: 5, answer: 5.5, tol: 0.1,
-    idea: 'A <b>forward rate</b> is a rate for a period that starts in the future, agreed today. It is not a guess: it falls out of today’s rates.',
-    q: 'Mary invests $100 for 2 years at 5% a year and ends with $110,25. John gets 4,50% in year 1. What must year 2 pay so John also ends with $110,25?',
-    label: 'Year 2 rate for John', show: '5,50%',
-    why: 'If the two roads paid differently, everyone would take the better one for free. So they must meet.',
-    math: '1,05 × 1,05 = 1,045 × (1 + f) &nbsp;→&nbsp; f = 5,50%',
-    take: 'No arbitrage: two roads to the same date give the same price.' },
-  { kicker: 'Round 2 · Guess the forward', type: 'slider', min: 3, max: 7, start: 5, answer: 5.94, tol: 0.25,
-    idea: 'Same idea for months. Divide (1 + long rate) by (1 + short rate). Under one year, interest is simple: rate × fraction of the year.',
-    q: 'The 3-month rate is 4% and the 6-month rate is 5%. What is the forward rate from month 3 to month 6, per year?',
-    label: 'Your guess, annualized', show: '5,94%',
-    why: 'The 6-month rate is an average of the first 3 months and the next 3. The first 3 pay only 4%, so the next 3 must pay more than 5%.',
-    math: '(1 + 0,05/2) / (1 + 0,04/4) = 1,0148514<br>1,485% for 3 months × 4 = 5,94% a year',
-    take: 'An upward-sloping curve means forwards sit above spot.' },
-  { kicker: 'Round 3 · The annualizing trap', type: 'choice', options: ['14,51%', '7,01%', '6,00%', '5,50%'], answer: '7,01%',
-    idea: 'The formula gives the rate for the <b>whole</b> forward period. If that period is 2 years, you still need the rate per year.',
-    q: 'The 2-year rate is 5% and the 4-year rate is 6%. So 1,06⁴ / 1,05² = 1,14510382. What is the forward rate from year 2 to year 4, per year?',
-    why: '14,51% is earned over 2 years. Per year, take the square root and subtract 1.',
-    math: '√1,14510382 − 1 = 7,01% a year',
-    take: 'Annualize last. A 2-year rate quoted as a yearly one is the classic mistake.' },
-  { kicker: 'Round 4 · Read the curve', type: 'choice', options: ['Euribor will rise', 'Euribor will fall', 'Euribor will stay flat'], answer: 'Euribor will rise',
-    idea: 'An <b>FRA</b> (Forward Rate Agreement) locks a future interest rate today. “3 × 6” means a period that starts in 3 months and ends in 6. Its price is a forward rate.',
+  { kicker: 'Round 1 · The starting point', type: 'choice',
+    options: ['The rate for one payment on one date, with no coupons', 'The rate on any bond, coupons included', 'The rate the central bank sets'],
+    answer: 'The rate for one payment on one date, with no coupons',
+    idea: 'Everything today starts from the <b>zero-coupon curve</b>: one interest rate for each maturity, 3 months, 1 year, 2 years and so on.',
+    q: 'What is a zero-coupon rate?',
+    why: 'A zero-coupon rate is the pure rate for a single payment on a single date. Because no coupons are mixed in, it tells you exactly what one future cash flow is worth today.',
+    take: 'Zero-coupon rates are the building blocks for pricing bonds and derivatives.' },
+  { kicker: 'Round 2 · Two roads', type: 'choice', options: ['4,50%', '5,00%', '5,50%', '6,00%'], answer: '5,50%',
+    idea: 'A <b>forward rate</b> is a rate for a period that starts in the future, agreed today.<br><b>Hint:</b> over two years, both roads must end with the same money, so on average they must pay the same.',
+    q: 'Mary invests $100 for 2 years at 5% a year and ends with $110,25. John gets only 4,50% in year 1. What must year 2 pay so John also ends with $110,25?',
+    why: 'Year 1 paid less than 5%, so year 2 has to pay more than 5% to catch up.',
+    math: '1,05 × 1,05 = 1,045 × 1,055 → year 2 = 5,50%',
+    take: 'That 5,50% is the forward rate: the break-even rate for the second year.' },
+  { kicker: 'Round 3 · Same idea, in months', type: 'choice', options: ['Below 4%', 'Between 4% and 5%', 'Above 5%'], answer: 'Above 5%',
+    idea: 'The 6-month rate is like an average of the first 3 months and the next 3 months.',
+    q: 'The 3-month rate is 4% and the 6-month rate is 5%. The rate for months 3 to 6 is…',
+    why: 'The first 3 months pay only 4%. To average 5% over 6 months, the next 3 months must pay more than 5%. The exact answer is 5,94% a year.',
+    math: '(1 + 0,05/2) / (1 + 0,04/4) = 1,0148514 → 1,485% for 3 months',
+    take: 'Long rate above short rate means the forward sits above both.' },
+  { kicker: 'Round 4 · Per year, please', type: 'choice', options: ['1,485%', '2,97%', '5,94%'], answer: '5,94%',
+    idea: 'Rates are quoted <b>per year</b>. A rate for 3 months must be scaled up.<br><b>Formula:</b> rate for the period × (12 ÷ months in the period)',
+    q: 'In round 3 the forward rate came out at 1,485% for 3 months. What is it per year?',
+    why: 'A year has four 3-month periods, so multiply by 4.',
+    math: '1,485% × 12/3 = 1,485% × 4 = 5,94% a year',
+    take: 'The formula gives a rate for the period. Annualize last.' },
+  { kicker: 'Round 5 · The annualizing trap', type: 'choice', options: ['14,51%', 'About 7%', 'About 29%'], answer: 'About 7%',
+    idea: 'For periods longer than a year, interest compounds, so you can’t simply divide.<br><b>Formula:</b> per-year rate = (1 + total rate)^(1 ÷ years) − 1',
+    q: 'With a 2-year rate of 5% and a 4-year rate of 6%, the forward from year 2 to year 4 earns 14,51% in total over those 2 years. About how much is that per year?',
+    why: '14,51% is earned over two years, so per year it is roughly half. With compounding it is exactly 7,01%.',
+    math: '1,06⁴ / 1,05² = 1,14510382<br>√1,14510382 − 1 = 7,01% a year',
+    take: 'Quoting a 2-year rate as a yearly one is the classic mistake.' },
+  { kicker: 'Round 6 · The shape of the curve', type: 'choice', options: ['Above spot rates', 'Below spot rates', 'Equal to spot rates'], answer: 'Above spot rates',
+    idea: 'When longer maturities pay more, the curve <b>slopes upward</b>. The Spanish sovereign curve from class, on 27 August 2025, sloped upward.',
+    q: 'You saw it in rounds 2 and 3. On an upward-sloping curve, where do forward rates sit?',
+    why: 'In every example the forward was above the spot rates: 5,50% above 4,50% and 5%; 5,94% above 4% and 5%. On the Spanish curve every forward curve plotted above spot.',
+    take: 'An upward curve means the market expects rates to rise.' },
+  { kicker: 'Round 7 · FRA basics', type: 'choice',
+    options: ['3 months, starting in 3 months', '6 months, starting in 3 months', '3 months, starting today'], answer: '3 months, starting in 3 months',
+    idea: 'An <b>FRA</b> (Forward Rate Agreement) locks one future interest rate today. Its name is “A × B”: the period starts in A months and ends in B months. No principal changes hands, only the interest difference.',
+    q: 'Which period does a 3 × 6 FRA cover?',
+    why: 'It starts in 3 months and ends in 6 months, so it covers 3 months.',
+    math: 'Length = B − A = 6 − 3 = 3 months',
+    take: 'The price of an FRA is a forward rate for exactly that period.' },
+  { kicker: 'Round 8 · Read the curve', type: 'choice', options: ['Euribor will rise', 'Euribor will fall', 'Euribor will stay flat'], answer: 'Euribor will rise',
+    idea: 'Below are real FRA quotes on 3-month Euribor. Each bar is the rate the market locks in today for a later 3-month period.',
     pre: STAIRS,
-    q: 'Here are real FRA quotes on 3-month Euribor. The later the start, the higher the rate. What is the market expecting?',
-    why: 'Each bar is the rate the market locks in today for a later 3-month period: 2,80 → 3,00 → 3,24 → 3,35. Rising forwards mean the market expects rising rates.',
+    q: 'The later the start, the higher the rate. What is the market expecting?',
+    why: 'Rates for later periods are higher: 2,80 → 3,00 → 3,24 → 3,35. Rising forwards mean the market expects rising rates.',
     take: 'You don’t need to guess where rates go. The market has already placed its bet.' },
-  { kicker: 'Round 5 · Pay or receive?', type: 'choice', options: ['I receive money', 'I pay money', 'Nothing happens'], answer: 'I receive money',
-    idea: 'The <b>buyer</b> of an FRA pays the fixed FRA rate and receives Euribor, like a borrower who locked a rate. The buyer wins if Euribor fixes <b>above</b> the FRA rate. No principal changes hands, only the interest difference.',
-    q: 'You buy a 1 × 4 FRA at 2,255% on €100 million. One month later, 3-month Euribor fixes at 2,315% for 91 days. What happens?',
-    why: 'Euribor fixed 6 basis points above your rate, so the bank pays you. It pays on the start date, so the amount is discounted back.',
+  { kicker: 'Round 9 · Pay or receive?', type: 'choice', options: ['I receive money', 'I pay money', 'Nothing happens'], answer: 'I receive money',
+    idea: 'The <b>buyer</b> of an FRA is like a borrower who locked a rate: they pay the fixed FRA rate and receive Euribor.<br><b>Rule:</b> Euribor above the FRA rate → the buyer receives. Below → the buyer pays.',
+    q: 'You buy an FRA at 2,255% on €100 million. Then Euribor fixes at 2,315%. What happens?',
+    why: '2,315% is above your 2,255%, so the bank pays you the difference. It pays at the start of the period, so the amount is discounted back.',
     math: '€100m × (2,315% − 2,255%) × 91/360 ÷ (1 + 2,315% × 91/360)<br><b>= €15.078,43 to you</b>',
     take: 'Buyer = borrower. Rates up, the buyer gets paid.' },
-  { kicker: 'Round 6 · Be the CFO', type: 'cfo',
-    idea: 'Now use it. A company that will borrow later can <b>buy</b> an FRA to lock its rate: if rates rise, the FRA pays it; if rates fall, it pays the FRA.',
+  { kicker: 'Round 10 · Be the CFO', type: 'cfo',
+    idea: 'Now use it. A company that will borrow later can <b>buy</b> an FRA to lock its rate: if rates rise, the FRA pays the company; if rates fall, the company pays the FRA.',
     q: 'You’re the CFO. You will borrow €1 million in 3 months, for 91 days. Your budget assumes 4%: 4% × €1m × 91/360 = €10.111,11. What do you do?' },
 ];
 const SCEN = {
@@ -135,9 +158,9 @@ function render() {
   if (S.i < 0) { app.innerHTML = `
     <p class="kicker">Forward rates and FRAs</p>
     <h1>Be the CFO</h1>
-    <p>Six short rounds, about a minute each. Each one explains an idea, asks you a question, then shows the answer.</p>
+    <p>Ten quick rounds, about 6 minutes in total. Each one explains an idea, asks you a question, then shows the answer.</p>
     <p>By the end you’ll decide how a company borrows €1 million.</p>
-    <p class="muted">No finance background needed. Nothing you tap is sent anywhere.</p>
+    <p class="muted">No finance background needed: every round gives you the idea, and the formula when you need one. Nothing you tap is sent anywhere.</p>
     <button class="primary" id="go">Start</button>`; return; }
   if (S.i >= ROUNDS.length) return end();
   const r = ROUNDS[S.i], done = S.pick !== null;
@@ -189,7 +212,7 @@ function reveal(r, ok, lead) {
 }
 
 function end() {
-  const msg = S.score === scored ? 'Perfect. The trading desk is calling.' : S.score >= 3 ? 'Solid. You’d survive a day on the desk.' : 'Good start. Play again and beat your score.';
+  const msg = S.score === scored ? 'Perfect. The trading desk is calling.' : S.score >= 6 ? 'Solid. You’d survive a day on the desk.' : 'Good start. Play again and beat your score.';
   app.innerHTML = `<p class="kicker">Your result</p><p class="score">${S.score}/${scored}</p><p class="verdict">${msg}</p>
     <p class="muted">As CFO you chose to ${S.cfo === 'hedge' ? 'lock the rate' : 'take your chances'}.</p>
     <h2>Three things to remember</h2>
