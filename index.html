@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Be the CFO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: one phone-width column; each round = idea card, question, reveal with explanation. Figures only from the session 5 slides */
+:root {
+  --paper: #F3EEE3; --sand: #E8E0CF; --ink: #1E2433; --muted: #555A66; --rust: #9C3D24; --bar: #B8A88A; --line: #D3C8B2; --good: #2F6B4F;
+  --display: 'Libre Baskerville', Georgia, serif; --body: 'Public Sans', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #171B26; --sand: #232937; --ink: #EDE7DA; --muted: #A9AEBA; --rust: #E08A68; --bar: #6E6650; --line: #343B4B; --good: #7CC4A0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #171B26; --sand: #232937; --ink: #EDE7DA; --muted: #A9AEBA; --rust: #E08A68; --bar: #6E6650; --line: #343B4B; --good: #7CC4A0; color-scheme: dark }
+body { background: var(--paper); color: var(--ink); font: 17px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+main { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+h1, h2 { font-family: var(--display); font-weight: 400; line-height: 1.25; margin: 0; text-wrap: balance; }
+h1 { font-size: 34px; } h2 { font-size: 23px; }
+p { margin: 0; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.steps { display: flex; gap: 5px; flex: 1; }
+.steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.steps span.on { background: var(--rust); }
+.kicker { font-family: var(--display); font-style: italic; color: var(--rust); font-size: 15px; }
+.muted { color: var(--muted); font-size: 15px; }
+.idea { background: var(--sand); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; font-size: 16px; }
+.idea b:first-child { font-size: 13px; letter-spacing: .04em; color: var(--rust); }
+.choices { display: grid; gap: 10px; }
+button { font: 600 17px/1.25 var(--body); border-radius: 12px; padding: 15px 18px; cursor: pointer; text-align: left;
+  border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); min-height: 54px; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--rust); outline-offset: 2px; }
+button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); text-align: center; }
+button.right { border-color: var(--good); box-shadow: inset 0 0 0 1.5px var(--good); }
+button.wrong { border-color: var(--rust); box-shadow: inset 0 0 0 1.5px var(--rust); }
+button:disabled { cursor: default; }
+button.chosen { border-color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+button.right::after { content: "  ✓ correct"; color: var(--good); font-weight: 600; }
+button.wrong::after { content: "  ✗ your pick"; color: var(--rust); font-weight: 600; }
+.reveal { display: flex; flex-direction: column; gap: 12px; }
+.verdict { font-weight: 700; }
+.verdict.ok { color: var(--good); } .verdict.no { color: var(--rust); }
+.big { font-family: var(--display); font-size: 42px; color: var(--rust); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.math { font-variant-numeric: tabular-nums; background: var(--sand); border-radius: 8px; padding: 10px 12px; font-size: 15px; overflow-x: auto; }
+.take { border-left: 3px solid var(--rust); padding-left: 12px; font-family: var(--display); font-size: 18px; }
+.stairs { display: flex; align-items: flex-end; gap: 10px; height: 160px; }
+.stairs div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.stairs i { display: block; width: 100%; background: var(--bar); border-radius: 4px 4px 0 0; }
+.stairs div:last-child i { background: var(--rust); }
+.stairs b, .stairs small { font-size: 14px; font-variant-numeric: tabular-nums; }
+.slider { display: flex; flex-direction: column; gap: 6px; }
+.slider output { font-family: var(--display); font-size: 40px; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--rust); height: 32px; }
+.scale { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.rows { display: grid; gap: 8px; font-variant-numeric: tabular-nums; }
+.row { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.row.total { font-weight: 700; border-bottom: none; }
+.coin { font-family: var(--display); font-size: 52px; text-align: center; padding: 16px 0; background: var(--sand); border-radius: 12px; font-variant-numeric: tabular-nums; }
+.score { font-family: var(--display); font-size: 64px; line-height: 1; color: var(--rust); }
+.cards { display: grid; gap: 12px; }
+.cards p { font-family: var(--display); font-size: 20px; line-height: 1.35; border-top: 2px solid var(--ink); padding-top: 10px; }
+.src { font-size: 13px; color: var(--muted); }
+</style>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+</head>
+<body>
+
+<main id="app" aria-live="polite"></main>
+
+<script>
+// Every figure is from the Session 5 class slides. Round 6 draws Euribor from the two class scenarios only (3% or 5%).
+const pct = (v) => v.toFixed(2).replace('.', ',') + '%';
+const STAIRS = `<div class="stairs" role="img" aria-label="FRA quotes: 1 by 4 at 2.80, 3 by 6 at 3.00, 6 by 9 at 3.24, 9 by 12 at 3.35">${
+  [['1×4', 2.8, '2,80'], ['3×6', 3.003, '3,00'], ['6×9', 3.244, '3,24'], ['9×12', 3.352, '3,35']].map(([l, v, t]) =>
+  `<div><b>${t}</b><i style="height:${Math.round(v / 3.352 * 110)}px"></i><small>${l}</small></div>`).join('')}</div>
+  <p class="src">EUR FRAs on 3-month Euribor, Bloomberg, 19 October 2026. Bars to scale from zero.</p>`;
+
+const ROUNDS = [
+  { kicker: 'Round 1 · Two roads', type: 'slider', min: 4, max: 7, start: 5, answer: 5.5, tol: 0.1,
+    idea: 'A <b>forward rate</b> is a rate for a period that starts in the future, agreed today. It is not a guess: it falls out of today’s rates.',
+    q: 'Mary invests $100 for 2 years at 5% a year and ends with $110,25. John gets 4,50% in year 1. What must year 2 pay so John also ends with $110,25?',
+    label: 'Year 2 rate for John', show: '5,50%',
+    why: 'If the two roads paid differently, everyone would take the better one for free. So they must meet.',
+    math: '1,05 × 1,05 = 1,045 × (1 + f) &nbsp;→&nbsp; f = 5,50%',
+    take: 'No arbitrage: two roads to the same date give the same price.' },
+  { kicker: 'Round 2 · Guess the forward', type: 'slider', min: 3, max: 7, start: 5, answer: 5.94, tol: 0.25,
+    idea: 'Same idea for months. Divide (1 + long rate) by (1 + short rate). Under one year, interest is simple: rate × fraction of the year.',
+    q: 'The 3-month rate is 4% and the 6-month rate is 5%. What is the forward rate from month 3 to month 6, per year?',
+    label: 'Your guess, annualized', show: '5,94%',
+    why: 'The 6-month rate is an average of the first 3 months and the next 3. The first 3 pay only 4%, so the next 3 must pay more than 5%.',
+    math: '(1 + 0,05/2) / (1 + 0,04/4) = 1,0148514<br>1,485% for 3 months × 4 = 5,94% a year',
+    take: 'An upward-sloping curve means forwards sit above spot.' },
+  { kicker: 'Round 3 · The annualizing trap', type: 'choice', options: ['14,51%', '7,01%', '6,00%', '5,50%'], answer: '7,01%',
+    idea: 'The formula gives the rate for the <b>whole</b> forward period. If that period is 2 years, you still need the rate per year.',
+    q: 'The 2-year rate is 5% and the 4-year rate is 6%. So 1,06⁴ / 1,05² = 1,14510382. What is the forward rate from year 2 to year 4, per year?',
+    why: '14,51% is earned over 2 years. Per year, take the square root and subtract 1.',
+    math: '√1,14510382 − 1 = 7,01% a year',
+    take: 'Annualize last. A 2-year rate quoted as a yearly one is the classic mistake.' },
+  { kicker: 'Round 4 · Read the curve', type: 'choice', options: ['Euribor will rise', 'Euribor will fall', 'Euribor will stay flat'], answer: 'Euribor will rise',
+    idea: 'An <b>FRA</b> (Forward Rate Agreement) locks a future interest rate today. “3 × 6” means a period that starts in 3 months and ends in 6. Its price is a forward rate.',
+    pre: STAIRS,
+    q: 'Here are real FRA quotes on 3-month Euribor. The later the start, the higher the rate. What is the market expecting?',
+    why: 'Each bar is the rate the market locks in today for a later 3-month period: 2,80 → 3,00 → 3,24 → 3,35. Rising forwards mean the market expects rising rates.',
+    take: 'You don’t need to guess where rates go. The market has already placed its bet.' },
+  { kicker: 'Round 5 · Pay or receive?', type: 'choice', options: ['I receive money', 'I pay money', 'Nothing happens'], answer: 'I receive money',
+    idea: 'The <b>buyer</b> of an FRA pays the fixed FRA rate and receives Euribor, like a borrower who locked a rate. The buyer wins if Euribor fixes <b>above</b> the FRA rate. No principal changes hands, only the interest difference.',
+    q: 'You buy a 1 × 4 FRA at 2,255% on €100 million. One month later, 3-month Euribor fixes at 2,315% for 91 days. What happens?',
+    why: 'Euribor fixed 6 basis points above your rate, so the bank pays you. It pays on the start date, so the amount is discounted back.',
+    math: '€100m × (2,315% − 2,255%) × 91/360 ÷ (1 + 2,315% × 91/360)<br><b>= €15.078,43 to you</b>',
+    take: 'Buyer = borrower. Rates up, the buyer gets paid.' },
+  { kicker: 'Round 6 · Be the CFO', type: 'cfo',
+    idea: 'Now use it. A company that will borrow later can <b>buy</b> an FRA to lock its rate: if rates rise, the FRA pays it; if rates fall, it pays the FRA.',
+    q: 'You’re the CFO. You will borrow €1 million in 3 months, for 91 days. Your budget assumes 4%: 4% × €1m × 91/360 = €10.111,11. What do you do?' },
+];
+const SCEN = {
+  3: { loan: '€7.583,33', fra: 'you pay €2.508,75', hedged: '€10.092,09' },
+  5: { loan: '€12.638,89', fra: 'you receive €2.496,23', hedged: '€10.142,66' },
+};
+
+const S = { i: -1, pick: null, fix: null, rolling: false, score: 0, cfo: null };
+const app = document.getElementById('app');
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const scored = ROUNDS.filter((r) => r.type !== 'cfo').length;
+
+function top() {
+  return `<div class="top"><div class="steps" aria-hidden="true">${ROUNDS.map((_, k) => `<span class="${k <= S.i ? 'on' : ''}"></span>`).join('')}</div>
+    <span>Round ${S.i + 1} of ${ROUNDS.length} · Score ${S.score}/${scored}</span></div>`;
+}
+function next() { S.i++; S.pick = null; S.fix = null; render(); window.scrollTo(0, 0); }
+
+function render() {
+  if (S.i < 0) { app.innerHTML = `
+    <p class="kicker">Forward rates and FRAs</p>
+    <h1>Be the CFO</h1>
+    <p>Six short rounds, about a minute each. Each one explains an idea, asks you a question, then shows the answer.</p>
+    <p>By the end you’ll decide how a company borrows €1 million.</p>
+    <p class="muted">No finance background needed. Nothing you tap is sent anywhere.</p>
+    <button class="primary" id="go">Start</button>`; return; }
+  if (S.i >= ROUNDS.length) return end();
+  const r = ROUNDS[S.i], done = S.pick !== null;
+  let body = top() + `<p class="kicker">${r.kicker}</p><div class="idea"><b>THE IDEA</b><span>${r.idea}</span></div>${r.pre || ''}<h2>${r.q}</h2>`;
+
+  if (r.type === 'slider') {
+    const v = done ? S.pick : r.start;
+    body += `<div class="slider"><label for="g" class="muted">${r.label}</label><output id="gout">${pct(v)}</output>
+      <input id="g" type="range" min="${r.min}" max="${r.max}" step="0.05" value="${v}" ${done ? 'disabled' : ''}>
+      <div class="scale"><span>${r.min}%</span><span>${r.max}%</span></div></div>`;
+    body += done ? reveal(r, Math.abs(S.pick - r.answer) <= r.tol + 1e-9, `<p class="muted">Answer</p><p class="big">${r.show}</p>`)
+                 : '<button class="primary" id="lock">Lock in my answer</button>';
+  }
+  if (r.type === 'choice') {
+    body += `<div class="choices">${r.options.map((o) => {
+      const cls = !done ? '' : o === r.answer ? 'right' : o === S.pick ? 'wrong' : '';
+      return `<button data-o="${o}" class="${cls}" ${done ? 'disabled' : ''}>${o}</button>`; }).join('')}</div>`;
+    if (done) body += reveal(r, S.pick === r.answer, '');
+  }
+  if (r.type === 'cfo') {
+    body += `<div class="choices">
+      <button data-c="hedge" class="${S.cfo === 'hedge' ? 'chosen' : ''}" ${S.cfo ? 'disabled' : ''}>Lock it: buy a 3 × 6 FRA at 4%</button>
+      <button data-c="open" class="${S.cfo === 'open' ? 'chosen' : ''}" ${S.cfo ? 'disabled' : ''}>Take my chances: no FRA</button></div>`;
+    if (S.cfo) {
+      body += `<p class="muted">Now the market decides. Tap to fix 3-month Euribor.</p><div class="coin" id="coin">${S.fix ? 'Euribor ' + S.fix + '%' : 'Euribor ?'}</div>`;
+      if (!S.fix) body += '<button class="primary" id="roll">Fix Euribor</button>';
+      else {
+        const sc = SCEN[S.fix], h = S.cfo === 'hedge';
+        body += `<div class="reveal"><div class="rows">
+          <div class="row"><span>Loan interest</span><span>${sc.loan}</span></div>
+          <div class="row"><span>FRA</span><span>${h ? sc.fra : 'none'}</span></div>
+          <div class="row total"><span>Total cost</span><span>≈ ${h ? sc.hedged : sc.loan}</span></div></div>
+          <p class="verdict ${h || S.fix === 3 ? 'ok' : 'no'}">${h ? 'On budget. Whatever Euribor did, your cost stayed near €10.111.'
+            : S.fix === 3 ? 'Lucky this time: under budget. Next time it could be 5%.' : 'Over budget by €2.527,78. The board wants a word.'}</p>
+          <p class="muted">With the other choice, your total would be ≈ ${h ? sc.loan : sc.hedged}. ${h && S.fix === 3 ? 'Yes, the FRA cost you money this time. That’s fine: it was insurance, not a bet.' : ''}</p>
+          <p class="take">A good hedge can lose money. It doesn’t make you rich; it makes your future boring.</p>
+          <p class="muted">Ask your neighbour what they chose and what Euribor did to them.</p>
+          <button class="primary" id="next">See my result</button></div>`;
+      }
+    }
+  }
+  app.innerHTML = body;
+}
+
+function reveal(r, ok, lead) {
+  return `<div class="reveal">${lead}<p class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Correct!' : 'Not quite.'}</p>
+    <p>${r.why}</p>${r.math ? `<div class="math">${r.math}</div>` : ''}<p class="take">${r.take}</p>
+    <button class="primary" id="next">${S.i + 1 < ROUNDS.length ? 'Next round' : 'Finish'}</button></div>`;
+}
+
+function end() {
+  const msg = S.score === scored ? 'Perfect. The trading desk is calling.' : S.score >= 3 ? 'Solid. You’d survive a day on the desk.' : 'Good start. Play again and beat your score.';
+  app.innerHTML = `<p class="kicker">Your result</p><p class="score">${S.score}/${scored}</p><p class="verdict">${msg}</p>
+    <p class="muted">As CFO you chose to ${S.cfo === 'hedge' ? 'lock the rate' : 'take your chances'}.</p>
+    <h2>Three things to remember</h2>
+    <div class="cards"><p>The market has already placed its bet. Read the curve.</p><p>No free lunch, only different roads to the same price.</p><p>The best hedge makes the future boring.</p></div>
+    <p class="src">Figures from the Session 5 class slides on forward interest rates and FRAs.</p>
+    <button id="again">Play again</button>`;
+}
+
+app.addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.id === 'go' || b.id === 'next') next();
+  else if (b.id === 'lock') { const r = ROUNDS[S.i]; S.pick = parseFloat(document.getElementById('g').value); if (Math.abs(S.pick - r.answer) <= r.tol + 1e-9) S.score++; render(); }
+  else if (b.dataset.o) { S.pick = b.dataset.o; if (S.pick === ROUNDS[S.i].answer) S.score++; render(); }
+  else if (b.dataset.c) { S.cfo = b.dataset.c; S.pick = b.dataset.c; render(); }
+  else if (b.id === 'roll') roll();
+  else if (b.id === 'again') { Object.assign(S, { i: -1, pick: null, fix: null, score: 0, cfo: null }); render(); }
+});
+app.addEventListener('input', (e) => { if (e.target.id === 'g') document.getElementById('gout').textContent = pct(parseFloat(e.target.value)); });
+
+function roll() {
+  if (S.rolling) return; S.rolling = true;
+  const final = Math.random() < 0.5 ? 3 : 5, coin = document.getElementById('coin');
+  document.getElementById('roll').disabled = true;
+  const finish = () => { S.fix = final; S.rolling = false; render(); };
+  if (calm) return finish();
+  let n = 0; const t = setInterval(() => { coin.textContent = 'Euribor ' + (n % 2 ? 3 : 5) + '%'; if (++n > 11) { clearInterval(t); finish(); } }, 90);
+}
+render();
+</script>
+
+</body>
+</html>
