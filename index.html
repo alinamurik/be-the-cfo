@@ -125,7 +125,7 @@ const app = document.getElementById('app');
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const scored = ROUNDS.filter((r) => r.type !== 'cfo').length;
 
-function top() {
+function progress() {
   return `<div class="top"><div class="steps" aria-hidden="true">${ROUNDS.map((_, k) => `<span class="${k <= S.i ? 'on' : ''}"></span>`).join('')}</div>
     <span>Round ${S.i + 1} of ${ROUNDS.length} · Score ${S.score}/${scored}</span></div>`;
 }
@@ -141,7 +141,7 @@ function render() {
     <button class="primary" id="go">Start</button>`; return; }
   if (S.i >= ROUNDS.length) return end();
   const r = ROUNDS[S.i], done = S.pick !== null;
-  let body = top() + `<p class="kicker">${r.kicker}</p><div class="idea"><b>THE IDEA</b><span>${r.idea}</span></div>${r.pre || ''}<h2>${r.q}</h2>`;
+  let body = progress() + `<p class="kicker">${r.kicker}</p><div class="idea"><b>THE IDEA</b><span>${r.idea}</span></div>${r.pre || ''}<h2>${r.q}</h2>`;
 
   if (r.type === 'slider') {
     const v = done ? S.pick : r.start;
